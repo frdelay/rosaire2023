@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.web_view">
    <application
-        android:label="EDR_vw"
+        android:label="EDR_wv"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
