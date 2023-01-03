@@ -141,7 +141,6 @@ class LocalNotificationService {
     List<Meditation> meditations = await Meditation.notifMedit();
     DateTime dateInit = DateTime.now().add(const Duration(seconds: 30));
 
-    // TODO: remove print below
     print("++145 notif.dart meditationNumber: $meditationNumber #####");
 
     const int notificationNumber = 15;
@@ -150,7 +149,6 @@ class LocalNotificationService {
       int processedMeditationNumber = meditationNumber - 1 + i;
       int selectedMeditationNumber = selectMeditationNumber(processedMeditationNumber);
 
-      // TODO: remove print below
       print("++154 notif.dart selectedMeditationNumber: $selectedMeditationNumber #####");
 
       Meditation meditationNotification = meditations[selectedMeditationNumber];
@@ -159,7 +157,6 @@ class LocalNotificationService {
       DateTime notificationDate = dateInit.add(Duration(seconds: 300 * i));
       LocalNotificationService().showNotifDate(notificationDate, "$notificationTitle / $i");
 
-      // TODO: remove print below
       print("++163 notif.dart / notif $i $notificationDate $notificationTitle $selectedMeditationNumber");
     }
   }

@@ -10,7 +10,6 @@ dependencies:
 
   cupertino_icons: ^1.0.4
 
-  # load and display html
   webview_flutter: ^3.0.0
   shared_preferences: ^2.0.15
   http: ^0.13.5
@@ -36,3 +35,6 @@ flutter_native_splash:
   image: assets/EdR_splash.png
   android_12:
    image: assets/EdR_splash.png
+
+assets:  
+    - assets/EDR-logo-long.png

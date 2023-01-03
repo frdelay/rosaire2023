@@ -29,7 +29,6 @@ class _MainPageState extends State<MainPage> {
   late WebViewController controller;
   //late final LocalNotificationService localNotificationService;
 
-  //bool isLogged = false;
   String login = "";
 
   @override
@@ -44,9 +43,6 @@ class _MainPageState extends State<MainPage> {
 
   
 
-
-                          
-  bool? oldIsLogged;
   String gestCpte = "Crécpte";
   String urlGestCpte = "https://app2.equipes-rosaire.org/cpte_formcre.php";
   String urlMedit ="";
@@ -97,15 +93,15 @@ if (prefs.getString('login') == null) {
           appBar: AppBar(
             bottom: TabBar(
               tabs: [
-                Tab(icon: Icon(Icons.directions_car), text: "EdR"),
-                Tab(icon: Icon(Icons.directions_transit), text: "Medit"),
-                Tab(icon: Icon(Icons.directions_bike), text: "$gestCpte"),
-                Tab(icon: Icon(Icons.directions), text: "Journal"),
-                Tab(icon: Icon(Icons.alarm), text: "Contact"),
-
+                Tab(text: "EdR"),
+                Tab(text: "Medit"),
+                Tab(text: "$gestCpte"),
+                Tab(text: "Journal"),
+                Tab(text: "Contact"),
               ],
             ),
-            title: Text('Equipes du Rosaire'),
+            //title: Image.asset('assets/EDR-logo-long.png'),
+            title:Text('Méditez avec les Equipes du Rosaire'),
           ),
           body: TabBarView(
             children: [
@@ -211,3 +207,15 @@ if (prefs.getString('login') == null) {
         ));
   }
 }
+
+
+
+/*
+              tabs: [
+                Tab(icon: Icon(Icons.directions_car), text: "EdR"),
+                Tab(icon: Icon(Icons.directions_transit), text: "Medit"),
+                Tab(icon: Icon(Icons.directions_bike), text: "$gestCpte"),
+                Tab(icon: Icon(Icons.directions), text: "Journal"),
+                Tab(icon: Icon(Icons.alarm), text: "Contact"),
+              ],
+*/
