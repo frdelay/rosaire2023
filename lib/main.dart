@@ -1,12 +1,8 @@
-//https://stackoverflow.com/questions/59324921/flutter-dart-how-to-make-data-load-on-the-first-tab-when-launching-application
-
-
-
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-//import 'notification.dart';
+import 'notification.dart';
 
 void main() => runApp(MyApp());
 
@@ -27,7 +23,7 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
 
   late WebViewController controller;
-  //late final LocalNotificationService localNotificationService;
+  late final LocalNotificationService localNotificationService;
 
   String login = "";
 
@@ -35,8 +31,8 @@ class _MainPageState extends State<MainPage> {
   void initState() {
     super.initState();  
 
-    //localNotificationService = LocalNotificationService();
-    //localNotificationService.init();
+    localNotificationService = LocalNotificationService();
+    localNotificationService.init();
 
     gestionEtat();
   }
@@ -45,7 +41,8 @@ class _MainPageState extends State<MainPage> {
 
   String gestCpte = "Crécpte";
   String urlGestCpte = "https://app2.equipes-rosaire.org/cpte_formcre.php";
-  String urlMedit ="";
+  String urlMedit='https://app2.equipes-rosaire.org/medit_liste.php';
+
 
   gestionEtat() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -74,7 +71,7 @@ if (prefs.getString('login') == null) {
               "https://app2.equipes-rosaire.org/cpte_formedit.php?login=$login";
           urlMedit='https://app2.equipes-rosaire.org/medit_view.php?login=$login';
 
-        //localNotificationService.generate30Notifications(meditationNumber: 1,); //introduire nummedit,
+        localNotificationService.generate30Notifications(meditationNumber: 1,); //introduire nummedit,
 
         });
       print ("++84 : gestionEtat login $login");
@@ -88,33 +85,23 @@ if (prefs.getString('login') == null) {
 
 
     return DefaultTabController(
-        length: 5,
+        length: 4,
         child: Scaffold(
           appBar: AppBar(
             bottom: TabBar(
-              tabs: [
-                Tab(text: "EdR"),
+              tabs: [ 
                 Tab(text: "Medit"),
                 Tab(text: "$gestCpte"),
                 Tab(text: "Journal"),
                 Tab(text: "Contact"),
               ],
             ),
-            //title: Image.asset('assets/EDR-logo-long.png'),
-            title:Text('Méditez avec les Equipes du Rosaire'),
+            title: Image.asset('assets/EDR-logo-long.png'),
           ),
           body: TabBarView(
             children: [
 
-              Center(
-                  child: WebView(
-                      initialUrl:
-                          'https://app2.equipes-rosaire.org/bonjour.php',
-                      onPageStarted: (url) async {
-                        print('++115 : $url ($login)');
-                      })),
-
-              Center(child: Builder(builder: (context) {
+              Center(child: Builder(builder: (context) {//1
 
                 return login!= "0" ? 
                 WebView(  
@@ -122,7 +109,8 @@ if (prefs.getString('login') == null) {
                   javascriptMode: JavascriptMode.unrestricted,
                   onPageStarted: (url) async {
                     print('++105 : $url ($login)');
-              }
+              },
+              onWebViewCreated: (c){c.loadUrl(urlMedit); }
               )
               :
               WebView(  
@@ -130,14 +118,16 @@ if (prefs.getString('login') == null) {
                   javascriptMode: JavascriptMode.unrestricted,
                   onPageStarted: (url) async {
                     print('++113 : $url ($login)');
-              }
+              },
+              onWebViewCreated: (c){c.loadUrl(urlMedit); }
               );
               }
               )
               ),
 
 
-              Center(child: Builder(builder: (context) {
+
+              Center(child: Builder(builder: (context) {//2
 
                 return login != "0" ? 
                 
@@ -187,14 +177,14 @@ if (prefs.getString('login') == null) {
               
             })),
 
-              Center(
+              Center(//3
                   child: WebView(
                       initialUrl:
                           'https://app2.equipes-rosaire.org/journal.php',
                       onPageStarted: (url) async {
                         print('++105 : $url ($login)');
                       })),
-              Center(
+              Center(//4
                   child: WebView(
                       initialUrl:
                           'https://app2.equipes-rosaire.org/msg_form.php',
@@ -207,15 +197,3 @@ if (prefs.getString('login') == null) {
         ));
   }
 }
-
-
-
-/*
-              tabs: [
-                Tab(icon: Icon(Icons.directions_car), text: "EdR"),
-                Tab(icon: Icon(Icons.directions_transit), text: "Medit"),
-                Tab(icon: Icon(Icons.directions_bike), text: "$gestCpte"),
-                Tab(icon: Icon(Icons.directions), text: "Journal"),
-                Tab(icon: Icon(Icons.alarm), text: "Contact"),
-              ],
-*/

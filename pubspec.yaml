@@ -24,6 +24,9 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:  
+    - assets/EDR-logo-long.png
+    - assets/EDR-logo-long.jpg
 
 flutter_icons:
   image_path: "assets/EdR_icon.png"
@@ -36,5 +39,3 @@ flutter_native_splash:
   android_12:
    image: assets/EdR_splash.png
 
-assets:  
-    - assets/EDR-logo-long.png

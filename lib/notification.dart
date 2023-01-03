@@ -1,17 +1,11 @@
-/*
-[{"Nummedit":"1","Code":"J1","Titre":"L\u2019Annonciation"},{"Nummedit":"2","Code":"J2","Titre":"La Visitation"},{"Nummedit":"3","Code":"J3","Titre":"La Nativit\u00e9"},{"Nummedit":"4","Code":"J4","Titre":"La Pr\u00e9sentation au Temple"},{"Nummedit":"5","Code":"J5","Titre":"Le Recouvrement au Temple"},{"Nummedit":"6","Code":"L1","Titre":"Le Bapt\u00eame au Jourdain"},{"Nummedit":"7","Code":"L2","Titre":"Les Noces de Cana"},{"Nummedit":"8","Code":"L3","Titre":"L\u2019Annonce du Royaume"},{"Nummedit":"9","Code":"L4","Titre":"La Transfiguration"},{"Nummedit":"10","Code":"L5","Titre":"L\u2019Institution de l\u2019Eucharistie"},{"Nummedit":"11","Code":"D1","Titre":"L\u2019Agonie de J\u00e9sus"},{"Nummedit":"12","Code":"D2","Titre":"La Flagellation"},{"Nummedit":"13","Code":"D3","Titre":"Le Couronnement d\u2019\u00c9pines"},{"Nummedit":"14","Code":"D4","Titre":"Le Portement de Croix"},{"Nummedit":"15","Code":"D5","Titre":"La Mort de J\u00e9sus sur la Croix"},{"Nummedit":"16","Code":"G1","Titre":"La R\u00e9surrection"},{"Nummedit":"17","Code":"G2","Titre":"L\u2019Ascension"},{"Nummedit":"18","Code":"G3","Titre":"La Pentec\u00f4te"},{"Nummedit":"19","Code":"G4","Titre":"L\u2019Assomption"},{"Nummedit":"20","Code":"G5","Titre":"Le Couronnement de Marie"}]
-*/
-
-
-
-
 import 'dart:convert';
-import 'package:http/http.dart' as http;
-
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
+
+String MeditNotif=
+'[{"Nummedit":"1","Code":"J1","Titre":"L\u2019Annonciation"},{"Nummedit":"2","Code":"J2","Titre":"La Visitation"},{"Nummedit":"3","Code":"J3","Titre":"La Nativit\u00e9"},{"Nummedit":"4","Code":"J4","Titre":"La Pr\u00e9sentation au Temple"},{"Nummedit":"5","Code":"J5","Titre":"Le Recouvrement au Temple"},{"Nummedit":"6","Code":"L1","Titre":"Le Bapt\u00eame au Jourdain"},{"Nummedit":"7","Code":"L2","Titre":"Les Noces de Cana"},{"Nummedit":"8","Code":"L3","Titre":"L\u2019Annonce du Royaume"},{"Nummedit":"9","Code":"L4","Titre":"La Transfiguration"},{"Nummedit":"10","Code":"L5","Titre":"L\u2019Institution de l\u2019Eucharistie"},{"Nummedit":"11","Code":"D1","Titre":"L\u2019Agonie de J\u00e9sus"},{"Nummedit":"12","Code":"D2","Titre":"La Flagellation"},{"Nummedit":"13","Code":"D3","Titre":"Le Couronnement d\u2019\u00c9pines"},{"Nummedit":"14","Code":"D4","Titre":"Le Portement de Croix"},{"Nummedit":"15","Code":"D5","Titre":"La Mort de J\u00e9sus sur la Croix"},{"Nummedit":"16","Code":"G1","Titre":"La R\u00e9surrection"},{"Nummedit":"17","Code":"G2","Titre":"L\u2019Ascension"},{"Nummedit":"18","Code":"G3","Titre":"La Pentec\u00f4te"},{"Nummedit":"19","Code":"G4","Titre":"L\u2019Assomption"},{"Nummedit":"20","Code":"G5","Titre":"Le Couronnement de Marie"}]';
 
 
 class Meditation {
@@ -31,10 +25,8 @@ class Meditation {
   }
 
 // on récupère la liste des méditations et on retourne un tableau Objet de type Méditation
-  static Future<List<Meditation>> notifMedit() async {
-    var uri = Uri.parse("http://app2.equipes-rosaire.org/jsonmedit.php");
-    var response = await http.post(uri);
-    var jsonMedit = jsonDecode(response.body);
+  static List<Meditation> notifMedit() {
+    var jsonMedit = jsonDecode(MeditNotif);
     List<Meditation> meditations = [];
 
     jsonMedit.forEach((data) {
@@ -109,7 +101,7 @@ class LocalNotificationService {
 
     await flutterLocalNotificationsPlugin.zonedSchedule(
         0,
-        "${tz.TZDateTime.now}",
+        "${tz.TZDateTime.now(tz.getLocation('Europe/Paris'))}",
         "Aujourd'hui nouveau mystère",
         tz.TZDateTime.now(tz.local).add(Duration(seconds: delay)),
         platformChannelSpecifics,
@@ -138,7 +130,7 @@ class LocalNotificationService {
 
   /// Generates notifications for the next 30 days.
   generate30Notifications({required int meditationNumber}) async {
-    List<Meditation> meditations = await Meditation.notifMedit();
+    List<Meditation> meditations =  Meditation.notifMedit();
     DateTime dateInit = DateTime.now().add(const Duration(seconds: 30));
 
     print("++145 notif.dart meditationNumber: $meditationNumber #####");
