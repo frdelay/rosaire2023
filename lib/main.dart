@@ -62,7 +62,7 @@ if (prefs.getString('login') == null) {
           urlMedit='https://app2.equipes-rosaire.org/medit_liste.php';
 
         });
-      print ("++72 : gestionEtat login $login");
+      print ("++65 : gestionEtat login $login");
       }else{
 
         setState(() {
@@ -74,7 +74,7 @@ if (prefs.getString('login') == null) {
         localNotificationService.generate30Notifications(meditationNumber: 1,); //introduire nummedit,
 
         });
-      print ("++84 : gestionEtat login $login");
+      print ("++77 : gestionEtat login $login");
 
     }
   }
@@ -107,19 +107,13 @@ if (prefs.getString('login') == null) {
                 WebView(  
                   initialUrl: urlMedit,
                   javascriptMode: JavascriptMode.unrestricted,
-                  onPageStarted: (url) async {
-                    print('++105 : $url ($login)');
-              },
-              onWebViewCreated: (c){c.loadUrl(urlMedit); }
+                  onWebViewCreated: (c){c.loadUrl(urlMedit); }
               )
               :
               WebView(  
                   initialUrl:urlMedit, 
                   javascriptMode: JavascriptMode.unrestricted,
-                  onPageStarted: (url) async {
-                    print('++113 : $url ($login)');
-              },
-              onWebViewCreated: (c){c.loadUrl(urlMedit); }
+                  onWebViewCreated: (c){c.loadUrl(urlMedit); }
               );
               }
               )
@@ -136,14 +130,14 @@ if (prefs.getString('login') == null) {
                 javascriptMode: JavascriptMode.unrestricted,
                 initialUrl:
               'https://app2.equipes-rosaire.org/cpte_formedit.php?login=$login',
-              onPageStarted: (url) async {
+                onWebViewCreated: (c){c.loadUrl('https://app2.equipes-rosaire.org/cpte_formedit.php?login=$login'); },
+                onPageStarted: (url) async {
                 print('++107 : $url login : $login');
                 var exp = RegExp(r'(?<=\?login=)[0-9]*',);
                   if (url.contains(exp)) {
                             login =
                                 exp.allMatches(url.toString(), 0).first[0]!;
                           }
-                  print('++120 : $url loginCre : $login');
                   SharedPreferences prefs = await SharedPreferences.getInstance();
                   prefs.setString("login", login);
 
@@ -151,22 +145,20 @@ if (prefs.getString('login') == null) {
                 }
               )
 
-
-
-                    :
+                :
 
               //Cpte_FormCre() ;
 
               WebView(
                 javascriptMode: JavascriptMode.unrestricted,
                 initialUrl: 'https://app2.equipes-rosaire.org/cpte_formcre.php',
+                onWebViewCreated: (c){c.loadUrl('https://app2.equipes-rosaire.org/cpte_formcre.php'); },
                 onPageStarted: (url) async {
                 var exp = RegExp(r'(?<=\?login=)[0-9]*',);
                   if (url.contains(exp)) {
                             login =
                                 exp.allMatches(url.toString(), 0).first[0]!;
                           }
-                  print('++127 : $url loginNew : $login');
                   SharedPreferences prefs = await SharedPreferences.getInstance();
                   prefs.setString("login", login);
 
@@ -182,14 +174,12 @@ if (prefs.getString('login') == null) {
                       initialUrl:
                           'https://app2.equipes-rosaire.org/journal.php',
                       onPageStarted: (url) async {
-                        print('++105 : $url ($login)');
                       })),
               Center(//4
                   child: WebView(
                       initialUrl:
                           'https://app2.equipes-rosaire.org/msg_form.php',
                       onPageStarted: (url) async {
-                        print('++110 :  $url ($login)');
                       })),
 
             ],
