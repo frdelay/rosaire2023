@@ -24,9 +24,15 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   late final LocalNotificationService localNotificationService;
 
+<<<<<<< HEAD
   int login = 0;
   int user = 0;
   String prenom = "";
+=======
+  int login =0;
+  int user=0;
+  String prenom="";
+>>>>>>> 656274b (type int? dans main dart, échec)
   String gestCpte = "";
   String urlGestCpte =
       "https://app2.equipes-rosaire.org/cpte_cre.php?cre=start";
@@ -160,6 +166,7 @@ class _MainPageState extends State<MainPage> {
   gestionEtat() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
+<<<<<<< HEAD
     if ((prefs.getInt('login') == null) || (prefs.getInt('login') == 0)) {
       setState(() {
         gestCpte = "Crécpte";
@@ -173,6 +180,23 @@ class _MainPageState extends State<MainPage> {
         login = prefs.getInt('login')!;
         user = prefs.getInt('user')!;
         nMedit = d + user - 2; //nMedit = numéro de la médition du jour
+=======
+if ((prefs.getInt('login') == null)||	(prefs.getInt('login') == 0))
+{
+
+      setState(() {
+          gestCpte = "Crécpte";
+          urlGestCpte ="https://app2.equipes-rosaire.org/cpte_cre.php?cre=start";
+          urlMedit='https://app2.equipes-rosaire.org/medit_liste.php';
+        });
+      print ("++ main 60 : gestionEtat login = $login, user = $user, prenom = $prenom");
+
+
+      }else{
+
+        login = prefs.getInt('login');
+        user= prefs.getInt('user');
+>>>>>>> 656274b (type int? dans main dart, échec)
 
         gestCpte = "Modifcpte";
         urlGestCpte =
