@@ -24,23 +24,21 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   late final LocalNotificationService localNotificationService;
 
-<<<<<<< HEAD
+  String todo = "";
   int login = 0;
-  int user = 0;
   String prenom = "";
-=======
-  int login =0;
-  int user=0;
-  String prenom="";
->>>>>>> 656274b (type int? dans main dart, échec)
-  String gestCpte = "";
-  String urlGestCpte =
-      "https://app2.equipes-rosaire.org/cpte_cre.php?cre=start";
-  String urlMedit = 'https://app2.equipes-rosaire.org/medit_liste.php';
+  String email = "";
+  int usernum = 0;
+  String ekipnum = "";
+  String url = "";// valeurs console
+
+  String urlMedit = "http://libertation.fr";
+  String urlJournal = "http://libertation.fr";
+  String urlCpte = "http://libertation.fr";
+  String urlMsg = "http://libertation.fr";
   int nMedit = 0;
-  final controller1 = WebViewController();
-  final controllerCpte_FormEditLogged = WebViewController();
-  final controllerCpte_FormEditNotLogged = WebViewController();
+  final controllerMedit = WebViewController();
+  final controllerCpte = WebViewController();
   final controllerJournal = WebViewController();
   final controllerContact = WebViewController();
 
@@ -50,170 +48,151 @@ class _MainPageState extends State<MainPage> {
 
     localNotificationService = LocalNotificationService();
     localNotificationService.init();
-
-    initWebviewControllers();
     gestionEtat();
+    initWebviewControllers();
   }
 
   void initWebviewControllers() {
-    controller1
+    controllerMedit
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..loadRequest(Uri.parse(urlMedit));
+      ..loadRequest(Uri.parse(urlMedit))
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onPageStarted: (String url) async {
+          print("++ main 65 : $url");}
+          ));
 
-    controllerCpte_FormEditLogged
+    controllerJournal
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..loadRequest(Uri.parse(urlGestCpte))
+      ..loadRequest(Uri.parse(urlJournal))
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onPageStarted: (String url) async {
+          print("++ main 76 : $url");}
+          ));
+
+    controllerCpte
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..loadRequest(Uri.parse(urlCpte))
       ..setNavigationDelegate(
         NavigationDelegate(onPageStarted: (String url) async {
-          print('++ main 65 : $url login : $login');
+          print("++ main 85 : $url  todo=$todo");
+
           //extracton des variables utilisées par les notification
-          var expl = RegExp(
+
+          var extrlogin = RegExp(
             r'(?<=\?login=)[0-9]*',
           );
-          if (url.contains(expl)) {
-            login = int.parse(expl.allMatches(url.toString(), 0).first[0]!);
-          }
-          var expu = RegExp(
-            r'(?<=\&u=)[0-9]*',
-          );
-          if (url.contains(expu)) {
-            user = int.parse(expu.allMatches(url.toString(), 0).first[0]!);
-          }
-          var expp = RegExp(
-            r'(?<=\&p=)[a-zA-Z]*',
-          );
-          if (url.contains(expp)) {
-            prenom = expp.allMatches(url.toString(), 0).first[0]!;
+          if (url.contains(extrlogin)) {
+            login =
+                int.parse(extrlogin.allMatches(url.toString(), 0).first[0]!);
           }
 
+          var extruser = RegExp(
+            r'(?<=\&usernum=)[0-9]*',
+          );
+          if (url.contains(extruser)) {
+            usernum =
+                int.parse(extruser.allMatches(url.toString(), 0).first[0]!);
+          }
+
+          var extrprenom = RegExp(
+            r'(?<=\&prenom=)[a-zA-Z]*',
+          );
+          if (url.contains(extrprenom)) {
+            prenom = extrprenom.allMatches(url.toString(), 0).first[0]!;
+          }
+
+          var extremail = RegExp(
+            r'(?<=\&email=)[a-zA-Z@]*',
+          );
+          if (url.contains(extremail)) {
+            email = extremail.allMatches(url.toString(), 0).first[0]!;
+          }
+
+          var extrekipnum = RegExp(
+            r'(?<=\&ekipnum=)[A-Za-z0-9]*',
+          );
+          if (url.contains(extrekipnum)) {
+            ekipnum = extrekipnum.allMatches(url.toString(), 0).first[0]!;
+          }
+
+          var extrtodo = RegExp(
+            r'(?<=\&todo=)[a-zA-Z]*',
+          );
+          if (url.contains(extrtodo)) {
+            todo = extrtodo.allMatches(url.toString(), 0).first[0]!;
+            //todo=todo.substring(0,1); 
+          }
           //deconnexion
-          if (url.contains("cre=start")) {
+          if (url.contains("todo=suppr")) {
             login = 0;
-            user = 0;
             prenom = "";
+            email = "";
+            usernum = 0;
           }
 
           SharedPreferences prefs = await SharedPreferences.getInstance();
-          final int? oldLogin = prefs.getInt('login');
+          //final int? oldLogin = prefs.getInt('login');
 
           prefs.setInt("login", login);
-          prefs.setInt("user", user);
+          prefs.setInt("usernum", usernum);
           prefs.setString("prenom", prenom);
-          print("++ main 99 : editlogin = $login    u = $user  p= $prenom");
+          prefs.setString("email", email);
+          prefs.setString("ekipnum", ekipnum);
+          print("++ main 150 : $url ");
 
-          if (oldLogin != login) {
+          if (todo == "ok") {
             gestionEtat();
           }
         }),
       );
 
-    controllerCpte_FormEditNotLogged
-      ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..loadRequest(Uri.parse(urlGestCpte))
-      ..setNavigationDelegate(
-        NavigationDelegate(
-          onPageStarted: (String url) async {
-            var expl = RegExp(
-              r'(?<=\?login=)[0-9]*',
-            );
-            if (url.contains(expl)) {
-              login = int.parse(expl.allMatches(url.toString(), 0).first[0]!);
-            }
-            var expu = RegExp(
-              r'(?<=\&u=)[0-9]*',
-            );
-            if (url.contains(expu)) {
-              user = int.parse(expu.allMatches(url.toString(), 0).first[0]!);
-            }
-            var expp = RegExp(
-              r'(?<=\&p=)[a-zA-Z]*',
-            );
-            if (url.contains(expp)) {
-              prenom = expp.allMatches(url.toString(), 0).first[0]!;
-            }
-
-            //deconnexion
-            if (url.contains("cre=start")) {
-              login = 0;
-              user = 0;
-              prenom = "";
-            }
-
-            SharedPreferences prefs = await SharedPreferences.getInstance();
-            final int? oldLogin = prefs.getInt('login');
-            prefs.setInt("login", login);
-            prefs.setInt("user", user);
-            prefs.setString("prenom", prenom);
-            print(
-                "++ main 180 : url = $url crelogin = $login  u = $user  p= $prenom");
-
-            if (oldLogin != login) {
-              gestionEtat();
-            }
-          },
-        ),
-      );
-
-    controllerJournal
-      ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..loadRequest(Uri.parse('https://app2.equipes-rosaire.org/journal.php'));
-
     controllerContact
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..loadRequest(Uri.parse('https://app2.equipes-rosaire.org/msg_form.php'));
+      ..loadRequest(Uri.parse(urlMsg))
+            ..setNavigationDelegate(
+        NavigationDelegate(
+          onPageStarted: (String url) async {
+          print("++ main 168 : $url");}
+          ));
   }
 
   gestionEtat() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
-<<<<<<< HEAD
     if ((prefs.getInt('login') == null) || (prefs.getInt('login') == 0)) {
       setState(() {
-        gestCpte = "Crécpte";
-        urlGestCpte = "https://app2.equipes-rosaire.org/cpte_cre.php?cre=start";
-        urlMedit = 'https://app2.equipes-rosaire.org/medit_liste.php';
+        urlMedit = "https://app2.equipes-rosaire.org/medit_liste.php";
+        urlJournal = "https://app2.equipes-rosaire.org/journal.php";
+        urlCpte = "https://app2.equipes-rosaire.org/cpte.php?todo=start";
+        urlMsg = "https://app2.equipes-rosaire.org/msg.php";
       });
       print(
-          "++ main 60 : gestionEtat login = $login, user = $user, prenom = $prenom");
+          "++ main 170 : State0 tlupek = $todo / $login / $usernum / $prenom / $email / $ekipnum");
     } else {
       setState(() {
         login = prefs.getInt('login')!;
-        user = prefs.getInt('user')!;
-        nMedit = d + user - 2; //nMedit = numéro de la médition du jour
-=======
-if ((prefs.getInt('login') == null)||	(prefs.getInt('login') == 0))
-{
-
-      setState(() {
-          gestCpte = "Crécpte";
-          urlGestCpte ="https://app2.equipes-rosaire.org/cpte_cre.php?cre=start";
-          urlMedit='https://app2.equipes-rosaire.org/medit_liste.php';
-        });
-      print ("++ main 60 : gestionEtat login = $login, user = $user, prenom = $prenom");
-
-
-      }else{
-
-        login = prefs.getInt('login');
-        user= prefs.getInt('user');
->>>>>>> 656274b (type int? dans main dart, échec)
-
-        gestCpte = "Modifcpte";
-        urlGestCpte =
-            "https://app2.equipes-rosaire.org/cpte_edit.php?login=$login";
+        usernum = prefs.getInt('usernum')!;
+        nMedit = d + usernum - 2; //nMedit = numéro de la médition du jour
+        prenom = prefs.getString('prenom')!;
+        email = prefs.getString('email')!;
+        ekipnum = prefs.getString('ekipnum')!;
         urlMedit =
-            'https://app2.equipes-rosaire.org/medit_view.php?login=$login&n=$nMedit';
-
+            "https://app2.equipes-rosaire.org/medit_view.php?login=$login&n=$nMedit";
+        urlJournal =
+            "https://app2.equipes-rosaire.org/journal.php?ekipnum=$ekipnum";
+        urlCpte =
+            "https://app2.equipes-rosaire.org/cpte.php?login=$login&todo=formedit";
+        urlMsg =
+            "https://app2.equipes-rosaire.org/msg.php?login=$login&prenom=$prenom&email=$email&ekipnum=$ekipnum";
         localNotificationService.generate30Notifications(
             meditationNumber: nMedit, prenom: prenom); //introduire nummedit,
       });
       print(
-          "++ main 82 : gestionEtat login = $login, user = $user, prenom = $prenom");
+          "++ main 201 : State1 = $urlMedit / $urlJournal / $urlCpte / $urlMsg ");
     }
 
-    controller1.loadRequest(Uri.parse(urlMedit));
-    controllerCpte_FormEditLogged.loadRequest(Uri.parse(urlGestCpte));
-    controllerCpte_FormEditNotLogged.loadRequest(Uri.parse(urlGestCpte));
   }
 
   @override
@@ -224,44 +203,31 @@ if ((prefs.getInt('login') == null)||	(prefs.getInt('login') == 0))
           appBar: AppBar(
             bottom: TabBar(
               tabs: [
-                Tab(text: "Medit"),
-                Tab(text: "$gestCpte"),
-                Tab(text: "Journal"),
+                Tab(text: "Meditation"),
+                Tab(text: "Avec moi"),
+                Tab(text: "Compte"),
                 Tab(text: "Contact"),
               ],
             ),
-            title: Image.asset('assets/EDR-logo-long.png'),
+            title: Image.asset('assets/EDR-logo-blanc.png'),
+            backgroundColor: Color(0xFF2ba8a8),
           ),
           body: TabBarView(
             children: [
               Center(child: Builder(builder: (context) {
                 //1
-
-                return WebViewWidget(controller: controller1);
-              })),
-              Center(child: Builder(builder: (context) {
-                //2
-
-                return login != 0
-                    ?
-
-                    //Cpte_FormEdit(login)
-                    WebViewWidget(
-                        controller: controllerCpte_FormEditLogged,
-                      )
-                    :
-
-                    //Cpte_FormCre() ;
-                    WebViewWidget(
-                        controller: controllerCpte_FormEditNotLogged,
-                      );
+                return WebViewWidget(controller: controllerMedit);
               })),
               Center(
-                //3
+                //2
                 child: WebViewWidget(
                   controller: controllerJournal,
                 ),
               ),
+              Center(
+                  child: WebViewWidget(
+                controller: controllerCpte,
+              )),
               Center(
                 //4
                 child: WebViewWidget(

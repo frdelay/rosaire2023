@@ -26,7 +26,7 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:  
-    - assets/EDR-logo-long.png
+    - assets/EDR-logo-blanc.png
 
 flutter_icons:
   image_path: "assets/EdR_icon.png"
