@@ -30,12 +30,12 @@ class _MainPageState extends State<MainPage> {
   String email = "";
   int usernum = 0;
   String ekipnum = "";
-  String url = "";// valeurs console
 
-  String urlMedit = "http://libertation.fr";
-  String urlJournal = "http://libertation.fr";
-  String urlCpte = "http://libertation.fr";
-  String urlMsg = "http://libertation.fr";
+  String urlMedit = "https://app2.equipes-rosaire.org/medit_liste.php";
+  String urlJournal = "https://app2.equipes-rosaire.org/journal.php";
+  String urlCpte = "https://app2.equipes-rosaire.org/cpte.php?todo=start";
+  String urlMsg = "https://app2.equipes-rosaire.org/msg.php";
+
   int nMedit = 0;
   final controllerMedit = WebViewController();
   final controllerCpte = WebViewController();
@@ -57,28 +57,26 @@ class _MainPageState extends State<MainPage> {
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..loadRequest(Uri.parse(urlMedit))
       ..setNavigationDelegate(
-        NavigationDelegate(
-          onPageStarted: (String url) async {
-          print("++ main 65 : $url");}
-          ));
+          NavigationDelegate(onPageStarted: (String url) async {
+        print("++ main 65 : $url");
+      }));
 
     controllerJournal
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..loadRequest(Uri.parse(urlJournal))
       ..setNavigationDelegate(
-        NavigationDelegate(
-          onPageStarted: (String url) async {
-          print("++ main 76 : $url");}
-          ));
+          NavigationDelegate(onPageStarted: (String url) async {
+        print("++ main 76 : $url");
+      }));
 
     controllerCpte
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..loadRequest(Uri.parse(urlCpte))
       ..setNavigationDelegate(
         NavigationDelegate(onPageStarted: (String url) async {
-          print("++ main 85 : $url  todo=$todo");
+        
 
-          //extracton des variables utilisées par les notification
+          //extracton des variables utilisées par les notifications
 
           var extrlogin = RegExp(
             r'(?<=\?login=)[0-9]*',
@@ -122,7 +120,7 @@ class _MainPageState extends State<MainPage> {
           );
           if (url.contains(extrtodo)) {
             todo = extrtodo.allMatches(url.toString(), 0).first[0]!;
-            //todo=todo.substring(0,1); 
+            todo=todo.substring(0,2);
           }
           //deconnexion
           if (url.contains("todo=suppr")) {
@@ -141,7 +139,7 @@ class _MainPageState extends State<MainPage> {
           prefs.setString("email", email);
           prefs.setString("ekipnum", ekipnum);
           print("++ main 150 : $url ");
-
+  print("++ main 142 : $url  todo=$todo");
           if (todo == "ok") {
             gestionEtat();
           }
@@ -151,11 +149,10 @@ class _MainPageState extends State<MainPage> {
     controllerContact
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..loadRequest(Uri.parse(urlMsg))
-            ..setNavigationDelegate(
-        NavigationDelegate(
-          onPageStarted: (String url) async {
-          print("++ main 168 : $url");}
-          ));
+      ..setNavigationDelegate(
+          NavigationDelegate(onPageStarted: (String url) async {
+        print("++ main 168 : $url");
+      }));
   }
 
   gestionEtat() async {
@@ -191,8 +188,12 @@ class _MainPageState extends State<MainPage> {
       });
       print(
           "++ main 201 : State1 = $urlMedit / $urlJournal / $urlCpte / $urlMsg ");
-    }
+      controllerMedit.loadRequest(Uri.parse(urlMedit))  ;  
+      controllerJournal.loadRequest(Uri.parse(urlJournal))  ;  
+      controllerCpte.loadRequest(Uri.parse(urlCpte))  ;  
+      controllerContact.loadRequest(Uri.parse(urlMsg))  ;  
 
+    }
   }
 
   @override
@@ -203,10 +204,10 @@ class _MainPageState extends State<MainPage> {
           appBar: AppBar(
             bottom: TabBar(
               tabs: [
-                Tab(text: "Meditation"),
-                Tab(text: "Avec moi"),
-                Tab(text: "Compte"),
-                Tab(text: "Contact"),
+                Container(width:MediaQuery.of(context).size.width*40/100,child:Text( "Meditation")),
+                Container(width:MediaQuery.of(context).size.width*20/100,child:Text( "Avec moi")),
+                Container(width:MediaQuery.of(context).size.width*20/100,child:Text( "Compte")),
+                Container(width:MediaQuery.of(context).size.width*20/100,child:Text( "Contact")),
               ],
             ),
             title: Image.asset('assets/EDR-logo-blanc.png'),
