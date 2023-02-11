@@ -203,11 +203,12 @@ class _MainPageState extends State<MainPage> {
         child: Scaffold(
           appBar: AppBar(
             bottom: TabBar(
+              isScrollable: true,
               tabs: [
-                Container(width:MediaQuery.of(context).size.width*40/100,child:Text( "Meditation")),
-                Container(width:MediaQuery.of(context).size.width*20/100,child:Text( "Avec moi")),
-                Container(width:MediaQuery.of(context).size.width*20/100,child:Text( "Compte")),
-                Container(width:MediaQuery.of(context).size.width*20/100,child:Text( "Contact")),
+                Tab(child: Text("Meditation")),
+                Tab(child: Text("Avec moi")),
+                Tab(child: Text("Compte")),
+                Tab(child: Text("Contact")),
               ],
             ),
             title: Image.asset('assets/EDR-logo-blanc.png'),
