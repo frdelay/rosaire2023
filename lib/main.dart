@@ -102,7 +102,7 @@ class _MainPageState extends State<MainPage> {
           }
 
           var extremail = RegExp(
-            r'(?<=\&email=)[a-zA-Z@]*',
+            r'(?<=\&email=)[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}'
           );
           if (url.contains(extremail)) {
             email = extremail.allMatches(url.toString(), 0).first[0]!;
