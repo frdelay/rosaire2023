@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:web_view/param.dart';
@@ -57,102 +59,110 @@ class _MainPageState extends State<MainPage> {
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..loadRequest(Uri.parse(urlMedit))
       ..setNavigationDelegate(
-          NavigationDelegate(onPageStarted: (String url) async {
-        print("++ main 65 : $url");
-      }));
+        NavigationDelegate(
+          onPageStarted: (String url) async {
+            print("++ main 65 : $url");
+          },
+        ),
+      );
 
     controllerJournal
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..loadRequest(Uri.parse(urlJournal))
       ..setNavigationDelegate(
-          NavigationDelegate(onPageStarted: (String url) async {
-        print("++ main 76 : $url");
-      }));
+        NavigationDelegate(
+          onPageStarted: (String url) async {
+            print("++ main 76 : $url");
+          },
+        ),
+      );
 
     controllerCpte
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..loadRequest(Uri.parse(urlCpte))
       ..setNavigationDelegate(
-        NavigationDelegate(onPageStarted: (String url) async {
-        
+        NavigationDelegate(
+          onPageStarted: (String url) async {
+            //extracton des variables utilisées par les notifications
 
-          //extracton des variables utilisées par les notifications
+            var extrlogin = RegExp(
+              r'(?<=\?login=)[0-9]*',
+            );
+            if (url.contains(extrlogin)) {
+              login =
+                  int.parse(extrlogin.allMatches(url.toString(), 0).first[0]!);
+            }
 
-          var extrlogin = RegExp(
-            r'(?<=\?login=)[0-9]*',
-          );
-          if (url.contains(extrlogin)) {
-            login =
-                int.parse(extrlogin.allMatches(url.toString(), 0).first[0]!);
-          }
+            var extruser = RegExp(
+              r'(?<=&usernum=)[0-9]*',
+            );
+            if (url.contains(extruser)) {
+              usernum =
+                  int.parse(extruser.allMatches(url.toString(), 0).first[0]!);
+            }
 
-          var extruser = RegExp(
-            r'(?<=\&usernum=)[0-9]*',
-          );
-          if (url.contains(extruser)) {
-            usernum =
-                int.parse(extruser.allMatches(url.toString(), 0).first[0]!);
-          }
+            var extrprenom = RegExp(
+              r'(?<=&prenom=)[a-zA-Z]*',
+            );
+            if (url.contains(extrprenom)) {
+              prenom = extrprenom.allMatches(url.toString(), 0).first[0]!;
+            }
 
-          var extrprenom = RegExp(
-            r'(?<=\&prenom=)[a-zA-Z]*',
-          );
-          if (url.contains(extrprenom)) {
-            prenom = extrprenom.allMatches(url.toString(), 0).first[0]!;
-          }
+            var extremail = RegExp(
+                r'(?<=&email=)[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}');
+            if (url.contains(extremail)) {
+              email = extremail.allMatches(url.toString(), 0).first[0]!;
+            }
 
-          var extremail = RegExp(
-            r'(?<=\&email=)[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}'
-          );
-          if (url.contains(extremail)) {
-            email = extremail.allMatches(url.toString(), 0).first[0]!;
-          }
+            var extrekipnum = RegExp(
+              r'(?<=&ekipnum=)[A-Za-z0-9]*',
+            );
+            if (url.contains(extrekipnum)) {
+              ekipnum = extrekipnum.allMatches(url.toString(), 0).first[0]!;
+            }
 
-          var extrekipnum = RegExp(
-            r'(?<=\&ekipnum=)[A-Za-z0-9]*',
-          );
-          if (url.contains(extrekipnum)) {
-            ekipnum = extrekipnum.allMatches(url.toString(), 0).first[0]!;
-          }
+            var extrtodo = RegExp(
+              r'(?<=&todo=)[a-zA-Z]*',
+            );
+            if (url.contains(extrtodo)) {
+              todo = extrtodo.allMatches(url.toString(), 0).first[0]!;
+              todo = todo.substring(0, 2);
+            }
+            //deconnexion
+            if (url.contains("todo=suppr")) {
+              login = 0;
+              prenom = "";
+              email = "";
+              usernum = 0;
+            }
 
-          var extrtodo = RegExp(
-            r'(?<=\&todo=)[a-zA-Z]*',
-          );
-          if (url.contains(extrtodo)) {
-            todo = extrtodo.allMatches(url.toString(), 0).first[0]!;
-            todo=todo.substring(0,2);
-          }
-          //deconnexion
-          if (url.contains("todo=suppr")) {
-            login = 0;
-            prenom = "";
-            email = "";
-            usernum = 0;
-          }
+            SharedPreferences prefs = await SharedPreferences.getInstance();
+            //final int? oldLogin = prefs.getInt('login');
 
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-          //final int? oldLogin = prefs.getInt('login');
-
-          prefs.setInt("login", login);
-          prefs.setInt("usernum", usernum);
-          prefs.setString("prenom", prenom);
-          prefs.setString("email", email);
-          prefs.setString("ekipnum", ekipnum);
-          print("++ main 150 : $url ");
-  print("++ main 142 : $url  todo=$todo");
-          if (todo == "ok") {
-            gestionEtat();
-          }
-        }),
+            prefs.setInt("login", login);
+            prefs.setInt("usernum", usernum);
+            prefs.setString("prenom", prenom);
+            prefs.setString("email", email);
+            prefs.setString("ekipnum", ekipnum);
+            print("++ main 150 : $url ");
+            print("++ main 142 : $url  todo=$todo");
+            if (todo == "ok") {
+              gestionEtat();
+            }
+          },
+        ),
       );
 
     controllerContact
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..loadRequest(Uri.parse(urlMsg))
       ..setNavigationDelegate(
-          NavigationDelegate(onPageStarted: (String url) async {
-        print("++ main 168 : $url");
-      }));
+        NavigationDelegate(
+          onPageStarted: (String url) async {
+            print("++ main 168 : $url");
+          },
+        ),
+      );
   }
 
   gestionEtat() async {
@@ -188,10 +198,10 @@ class _MainPageState extends State<MainPage> {
       });
       print(
           "++ main 201 : State1 = $urlMedit / $urlJournal / $urlCpte / $urlMsg ");
-      controllerMedit.loadRequest(Uri.parse(urlMedit))  ;  
-      controllerJournal.loadRequest(Uri.parse(urlJournal))  ;  
-      controllerCpte.loadRequest(Uri.parse(urlCpte))  ;  
-      controllerContact.loadRequest(Uri.parse(urlMsg))  ;  
+      controllerMedit.loadRequest(Uri.parse(urlMedit));
+      controllerJournal.loadRequest(Uri.parse(urlJournal));
+      controllerCpte.loadRequest(Uri.parse(urlCpte));
+      controllerContact.loadRequest(Uri.parse(urlMsg));
 
     }
   }
@@ -203,6 +213,25 @@ class _MainPageState extends State<MainPage> {
         child: Scaffold(
           appBar: AppBar(
             bottom: TabBar(
+              onTap: (index) async {
+                print("++ main 217 : $index");
+                if (index == 0) {
+                  await Future<void>.delayed(Duration(seconds: 1));
+                  controllerMedit.runJavaScript("window.scrollTo({top: 0, behavior: 'smooth'});");
+                }
+                if (index == 1) {
+                  await Future<void>.delayed(Duration(seconds: 1));
+                  controllerJournal.runJavaScript("window.scrollTo({top: 0, behavior: 'smooth'});");
+                }
+                if (index == 2) {
+                  await Future<void>.delayed(Duration(seconds: 1));
+                  controllerCpte.runJavaScript("window.scrollTo({top: 0, behavior: 'smooth'});");
+                }
+                if (index == 3) {
+                  await Future<void>.delayed(Duration(seconds: 1));
+                  controllerContact.runJavaScript("window.scrollTo({top: 0, behavior: 'smooth'});");
+                }
+              },
               isScrollable: true,
               tabs: [
                 Tab(child: Text("Meditation")),
