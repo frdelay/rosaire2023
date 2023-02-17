@@ -1,13 +1,17 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:web_view/param.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-
+import 'package:http/http.dart' as http;
 import 'notification.dart';
+import 'dart:convert';
 
-void main() => runApp(MyApp());
+void main() async {// Force the layout to Portrait mode
+  WidgetsFlutterBinding.ensureInitialized();
+  await SystemChrome.setPreferredOrientations(
+      [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   @override
@@ -26,30 +30,25 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   late final LocalNotificationService localNotificationService;
 
-  String todo = "";
-  int login = 0;
-  String prenom = "";
-  String email = "";
-  int usernum = 0;
-  String ekipnum = "";
+int login=0 ;
+String prenom = "";
+int notifmedit = 0;
 
-  String urlMedit = "https://app2.equipes-rosaire.org/medit_liste.php";
-  String urlJournal = "https://app2.equipes-rosaire.org/journal.php";
-  String urlCpte = "https://app2.equipes-rosaire.org/cpte.php?todo=start";
-  String urlMsg = "https://app2.equipes-rosaire.org/msg.php";
+// variables extraites des url
+int ulogin=0;
+String utodo = "";
 
-  int nMedit = 0;
+String urlMedit =
+      "https://app2.equipes-rosaire.org/medit_liste.php?menu=medit";
+
   final controllerMedit = WebViewController();
-  final controllerCpte = WebViewController();
-  final controllerJournal = WebViewController();
-  final controllerContact = WebViewController();
 
   @override
   void initState() {
     super.initState();
 
-    localNotificationService = LocalNotificationService();
-    localNotificationService.init();
+   localNotificationService = LocalNotificationService();
+   localNotificationService.init();
     gestionEtat();
     initWebviewControllers();
   }
@@ -61,212 +60,72 @@ class _MainPageState extends State<MainPage> {
       ..setNavigationDelegate(
         NavigationDelegate(
           onPageStarted: (String url) async {
-            print("++ main 65 : $url");
-          },
-        ),
-      );
-
-    controllerJournal
-      ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..loadRequest(Uri.parse(urlJournal))
-      ..setNavigationDelegate(
-        NavigationDelegate(
-          onPageStarted: (String url) async {
-            print("++ main 76 : $url");
-          },
-        ),
-      );
-
-    controllerCpte
-      ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..loadRequest(Uri.parse(urlCpte))
-      ..setNavigationDelegate(
-        NavigationDelegate(
-          onPageStarted: (String url) async {
-            //extracton des variables utilisées par les notifications
-
             var extrlogin = RegExp(
-              r'(?<=\?login=)[0-9]*',
+              r'(?<=\&login=)[0-9]*',
             );
             if (url.contains(extrlogin)) {
-              login =
+              ulogin =
                   int.parse(extrlogin.allMatches(url.toString(), 0).first[0]!);
-            }
-
-            var extruser = RegExp(
-              r'(?<=&usernum=)[0-9]*',
-            );
-            if (url.contains(extruser)) {
-              usernum =
-                  int.parse(extruser.allMatches(url.toString(), 0).first[0]!);
-            }
-
-            var extrprenom = RegExp(
-              r'(?<=&prenom=)[a-zA-Z]*',
-            );
-            if (url.contains(extrprenom)) {
-              prenom = extrprenom.allMatches(url.toString(), 0).first[0]!;
-            }
-
-            var extremail = RegExp(
-                r'(?<=&email=)[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}');
-            if (url.contains(extremail)) {
-              email = extremail.allMatches(url.toString(), 0).first[0]!;
-            }
-
-            var extrekipnum = RegExp(
-              r'(?<=&ekipnum=)[A-Za-z0-9]*',
-            );
-            if (url.contains(extrekipnum)) {
-              ekipnum = extrekipnum.allMatches(url.toString(), 0).first[0]!;
             }
 
             var extrtodo = RegExp(
               r'(?<=&todo=)[a-zA-Z]*',
             );
             if (url.contains(extrtodo)) {
-              todo = extrtodo.allMatches(url.toString(), 0).first[0]!;
-              todo = todo.substring(0, 2);
+              utodo = extrtodo.allMatches(url.toString(), 0).first[0]!;
             }
-            //deconnexion
-            if (url.contains("todo=suppr")) {
-              login = 0;
-              prenom = "";
-              email = "";
-              usernum = 0;
-            }
-
             SharedPreferences prefs = await SharedPreferences.getInstance();
-            //final int? oldLogin = prefs.getInt('login');
-
-            prefs.setInt("login", login);
-            prefs.setInt("usernum", usernum);
-            prefs.setString("prenom", prenom);
-            prefs.setString("email", email);
-            prefs.setString("ekipnum", ekipnum);
-            print("++ main 150 : $url ");
-            print("++ main 142 : $url  todo=$todo");
-            if (todo == "ok") {
-              gestionEtat();
+            if ((utodo == "okcre")||(utodo == "okedit")){
+              prefs.setInt("login", ulogin);
+              setState(() {
+                login =ulogin;
+              print("++ main 76 : SP $url / ulogin : $ulogin");
+                } );
             }
-          },
-        ),
-      );
 
-    controllerContact
-      ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..loadRequest(Uri.parse(urlMsg))
-      ..setNavigationDelegate(
-        NavigationDelegate(
-          onPageStarted: (String url) async {
-            print("++ main 168 : $url");
           },
         ),
       );
+      gestionEtat();
   }
 
   gestionEtat() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    if ((prefs.getInt('login') == null) || (prefs.getInt('login') == 0)) {
+    int? pplogin=prefs.getInt('login');print ("++ main85 pplogin : $pplogin");
+    if (pplogin == null) {
       setState(() {
-        urlMedit = "https://app2.equipes-rosaire.org/medit_liste.php";
-        urlJournal = "https://app2.equipes-rosaire.org/journal.php";
-        urlCpte = "https://app2.equipes-rosaire.org/cpte.php?todo=start";
-        urlMsg = "https://app2.equipes-rosaire.org/msg.php";
-      });
-      print(
-          "++ main 170 : State0 tlupek = $todo / $login / $usernum / $prenom / $email / $ekipnum");
-    } else {
-      setState(() {
-        login = prefs.getInt('login')!;
-        usernum = prefs.getInt('usernum')!;
-        nMedit = d + usernum - 2; //nMedit = numéro de la médition du jour
-        prenom = prefs.getString('prenom')!;
-        email = prefs.getString('email')!;
-        ekipnum = prefs.getString('ekipnum')!;
         urlMedit =
-            "https://app2.equipes-rosaire.org/medit_view.php?login=$login&n=$nMedit";
-        urlJournal =
-            "https://app2.equipes-rosaire.org/journal.php?ekipnum=$ekipnum";
-        urlCpte =
-            "https://app2.equipes-rosaire.org/cpte.php?login=$login&todo=formedit";
-        urlMsg =
-            "https://app2.equipes-rosaire.org/msg.php?login=$login&prenom=$prenom&email=$email&ekipnum=$ekipnum";
-        localNotificationService.generate30Notifications(
-            meditationNumber: nMedit, prenom: prenom); //introduire nummedit,
+            "https://app2.equipes-rosaire.org/medit_liste.php?menu=medit";
       });
-      print(
-          "++ main 201 : State1 = $urlMedit / $urlJournal / $urlCpte / $urlMsg ");
-      controllerMedit.loadRequest(Uri.parse(urlMedit));
-      controllerJournal.loadRequest(Uri.parse(urlJournal));
-      controllerCpte.loadRequest(Uri.parse(urlCpte));
-      controllerContact.loadRequest(Uri.parse(urlMsg));
+      print("++ main 88 : S0 $urlMedit");
+    } else {
+      var uri =
+          Uri.parse("http://app2.equipes-rosaire.org/user.php?login=$pplogin");
+      var response = await http.post(uri);
+      var jsonMedit = jsonDecode(response.body);
+      setState(() {
+        prenom = jsonMedit['prenom'];
+        notifmedit = int.parse(jsonMedit['notifmedit']);
+        urlMedit =
+            "https://app2.equipes-rosaire.org/medit_view.php?login=$pplogin&menu=medit";
+        localNotificationService.generate30Notifications(
+            meditationNumber: notifmedit,
+            prenom: prenom);
+      });
+      print("++ main 102 : S1  $urlMedit");
 
+      controllerMedit.loadRequest(Uri.parse(urlMedit));
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-        length: 4,
-        child: Scaffold(
-          appBar: AppBar(
-            bottom: TabBar(
-              onTap: (index) async {
-                print("++ main 217 : $index");
-                if (index == 0) {
-                  await Future<void>.delayed(Duration(seconds: 1));
-                  controllerMedit.runJavaScript("window.scrollTo({top: 0, behavior: 'smooth'});");
-                }
-                if (index == 1) {
-                  await Future<void>.delayed(Duration(seconds: 1));
-                  controllerJournal.runJavaScript("window.scrollTo({top: 0, behavior: 'smooth'});");
-                }
-                if (index == 2) {
-                  await Future<void>.delayed(Duration(seconds: 1));
-                  controllerCpte.runJavaScript("window.scrollTo({top: 0, behavior: 'smooth'});");
-                }
-                if (index == 3) {
-                  await Future<void>.delayed(Duration(seconds: 1));
-                  controllerContact.runJavaScript("window.scrollTo({top: 0, behavior: 'smooth'});");
-                }
-              },
-              isScrollable: true,
-              tabs: [
-                Tab(child: Text("Meditation")),
-                Tab(child: Text("Avec moi")),
-                Tab(child: Text("Compte")),
-                Tab(child: Text("Contact")),
-              ],
-            ),
-            title: Image.asset('assets/EDR-logo-blanc.png'),
-            backgroundColor: Color(0xFF2ba8a8),
-          ),
-          body: TabBarView(
-            children: [
-              Center(child: Builder(builder: (context) {
-                //1
-                return WebViewWidget(controller: controllerMedit);
-              })),
-              Center(
-                //2
-                child: WebViewWidget(
-                  controller: controllerJournal,
-                ),
-              ),
-              Center(
-                  child: WebViewWidget(
-                controller: controllerCpte,
-              )),
-              Center(
-                //4
-                child: WebViewWidget(
-                  controller: controllerContact,
-                ),
-              ),
-            ],
-          ),
-        ));
+    return Scaffold(
+        appBar: AppBar(
+          title: Image.asset('assets/EDR-logo-blanc.png'),
+          backgroundColor: Color(0xFF2ba8a8),
+          shadowColor: Color(0xffffff),
+        ),
+        body: WebViewWidget(controller: controllerMedit));
   }
 }

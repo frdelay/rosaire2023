@@ -107,7 +107,7 @@ class LocalNotificationService {
     const int notificationNumber = 3;
 
     for (int i = 1; i <= notificationNumber; i = i + 1) {
-      int processedMeditationNumber = meditationNumber + i;
+      int processedMeditationNumber = meditationNumber + i-2;
       int selectedMeditationNumber =
           selectMeditationNumber(processedMeditationNumber);
 
