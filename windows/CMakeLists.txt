@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
-project(web_view LANGUAGES CXX)
+project(equipesrosaire LANGUAGES CXX)
 
-set(BINARY_NAME "web_view")
+set(BINARY_NAME "equipesrosaire")
 
 cmake_policy(SET CMP0063 NEW)
 

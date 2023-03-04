@@ -27,7 +27,7 @@ class LocalNotificationService {
           presentAlert: true,
           presentBadge: true,
           presentSound: true,
-          badgeNumber: 5,
+          badgeNumber: 1,
           attachments: [],
       );
 
@@ -99,12 +99,12 @@ class LocalNotificationService {
   //generate30Notifications({required int meditationNumber, required String prenom }) async {
   generate30Notifications({required int meditationNumber, required String prenom}) async {
     List<Meditation> meditations = await Meditation.notifMedit();
-    DateTime dateInit = DateTime.now().add(const Duration(seconds: 10));
+    //DateTime dateInit = DateTime.now().add(const Duration(seconds: 10));
 
     // TODO: remove print below
     print("++ notif 105: $meditationNumber");
 
-    const int notificationNumber = 3;
+    const int notificationNumber = 30;
 
     for (int i = 1; i <= notificationNumber; i = i + 1) {
       int processedMeditationNumber = meditationNumber + i-2;

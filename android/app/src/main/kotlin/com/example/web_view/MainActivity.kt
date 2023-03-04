@@ -1,4 +1,4 @@
-package com.example.web_view
+package com.equipesrosaire
 
 import io.flutter.embedding.android.FlutterActivity
 

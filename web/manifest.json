@@ -1,6 +1,6 @@
 {
-    "name": "web_view",
-    "short_name": "web_view",
+    "name": "equipesrosaire",
+    "short_name": "equipesrosaire",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
